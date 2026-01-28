@@ -1,0 +1,123 @@
+parameters:
+- name: AgentPool
+  default: InternalAgentUI
+- name: RepositoryName     # Repo name which contain project
+  default: '' 
+- name: Shared_Folder      # environment path to save publish files #### not include BackEndServices folder ####
+  default: ''
+- name: Artifact_Output    # folder name for publish files
+  default: ''
+- name: ParentFolder    # folder name for publish files
+  default: ''
+- name: ProjectPath
+  default: ''   
+- name: AppType        # used for delete JS files when deploying Angular
+  default: ''  
+- name: Configuration        
+  default: ''    
+- name: distFolderName        
+  default: ''  
+
+stages:
+- stage: 'Build'
+  displayName: 'Build'
+      
+  jobs:
+  - job: 'BuildJob1'
+    displayName: 'BuildJob1'
+    timeoutInMinutes: 30
+    cancelTimeoutInMinutes: 1
+    pool:
+      name: ${{ parameters.AgentPool }}
+      # demands:
+      #   - agent.name -equals win_33_1
+    steps:
+    - checkout: self     # download DevOpsConfig Repo
+    - checkout: ${{ parameters.RepositoryName }}   # download Project Repo
+      clean: false
+
+
+    # kill node process
+    - task: PowerShell@2
+      displayName: 'Kill running service'
+      inputs:
+        targetType: 'inline'
+        script: 'ps node -ErrorAction SilentlyContinue | kill -PassThru -Force'
+        showWarnings: true
+
+
+    # Delete dist folder
+    - task: PowerShell@2
+      displayName: 'Delete dist folder'
+      inputs:
+        targetType: 'inline'
+        script: 'if (Test-Path "dist"){ Remove-Item -Path dist -Recurse -Force}'
+        showWarnings: true
+        workingDirectory: $(Build.Repository.LocalPath)\${{ parameters.RepositoryName }}\${{ parameters.ProjectPath }}
+
+
+    # npm install 
+    - task: Npm@1
+      displayName: npm install
+      inputs:
+        command: 'custom'
+        workingDir: '$(Build.Repository.LocalPath)\${{ parameters.RepositoryName }}\${{ parameters.ProjectPath }}'
+        customCommand: 'install -f'
+
+
+    # Build React 
+    - task: CmdLine@2
+      displayName: Build React 
+      inputs:
+        script: |               
+          npm run build
+        workingDirectory: '$(Build.Repository.LocalPath)\${{ parameters.RepositoryName }}\${{ parameters.ProjectPath }}'
+  # node --max-old-space-size=8096 ./node_modules/@angular/cli/bin/ng build --configuration=testStage
+  
+    # kill node process
+    - task: PowerShell@2
+      displayName: 'Kill running service'
+      inputs:
+        targetType: 'inline'
+        script: 'ps node -ErrorAction SilentlyContinue | kill -PassThru -Force'
+        showWarnings: true
+
+
+    # # Delete assets folder
+    # - task: PowerShell@2
+    #   displayName: 'Delete assets folder'
+    #   inputs:
+    #     targetType: 'inline'
+    #     script: 'if (Test-Path "assets"){ Remove-Item -Path assets -Recurse -Force}'
+    #     showWarnings: true
+    #     workingDirectory: $(Build.SourcesDirectory)/${{ parameters.RepositoryName }}\${{ parameters.ProjectPath }}dist\${{ parameters.distFolderName }}
+    #     # workingDirectory: $(Build.SourcesDirectory)/${{ parameters.RepositoryName }}\Z2AdminAngularUI\dist\Z2DataDMWebClient
+
+
+    # Publish Artifact    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: ${{ parameters.Artifact_Output }}_$(Build.BuildNumber)'
+      retryCountOnTaskFailure: 3
+      inputs:
+        PathtoPublish: ${{ parameters.RepositoryName }}\${{ parameters.ProjectPath }}dist\ #${{ parameters.distFolderName }}
+        # PathtoPublish: ${{ parameters.RepositoryName }}\AngularUI\dist\Z2DataDMWebClient
+        ArtifactName: ${{ parameters.Artifact_Output }}_$(Build.BuildNumber)
+        ArtifactType: FilePath
+        TargetPath: ${{ parameters.Shared_Folder }}\${{ parameters.ParentFolder }}${{ parameters.Artifact_Output }}
+
+
+    # - task: PowerShell@2
+    #   displayName: Remove Old Versions
+    #   inputs:
+    #     filePath: 'DevOpsConfig\Scripts\RemoveOldVersions_Dev.ps1'
+    #     workingDirectory: ${{ parameters.Shared_Folder }}\${{ parameters.ParentFolder }}${{ parameters.Artifact_Output }}
+    #   continueOnError: true
+
+
+    # # Add Build Logs
+    # - task: CmdLine@2
+    #   displayName: Add Build Logs
+    #   inputs:
+    #     script: >+
+    #       echo Pipeline: "$(Build.DefinitionName)" Build Number: "$(Build.BuildNumber)" Triggered: "$(Build.Reason)" By: "$(Build.QueuedBy)"  at %date%  %time% >> ${{ parameters.Shared_Folder }}\BuildLogs\$(build.sourceversion).txt
+     
