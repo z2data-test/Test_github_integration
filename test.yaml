@@ -46,7 +46,7 @@ resources:
     #      - AMAT.UI
 
 stages:
-- template: ../../Stages/Dev/Dev_Build_UI_React.yml
+- template: ./test.yaml
   parameters:
     RepositoryName: ${{ parameters.RepositoryName }}
     Shared_Folder: $(Dev_Shared_Folder)     # from SharedVars
