@@ -1,1 +1,72 @@
-test file 
+trigger: none
+name: $(Test_Major_No).$(Test_Minor_No).$(Test_Sprint_No).$(rev:r)  # include in Variables/SharedVars_BE.yml
+parameters:
+- name: RepositoryName     # Repo name which contain project
+  default: 'Test_github_integration'
+
+# change the below variables based on each pipeline
+variables:
+  - template: ../../Variables/SharedVars_BE.yml
+  - name: Artifact_Output
+    value: 'Test_React'
+  - name: ParentFolder             # folder to save artifact  >>  DataExport/Artifact_Output
+    value: 'full_stack_app\'  
+  - name: ProjectPath
+    value: 'hello-world-ui/'     
+  - name: WebsiteName
+    value: 'Test_react'
+  - name: WebsitePhysicalPath
+    value: 'C:\inetpub\wwwroot\Dev.Z2data.com\UI'
+  - name: VirtualApplication
+    value: ''  
+  - name: IIS_Pool        # Pool Application name to kill process
+    value: 'dev_z2data'  
+  - name: AppType  # used for delete JS files when deploying Angular
+    value: ''   
+  # - name: UI_Environment  # used for build angular based on environment name
+  #   value: "adminService_build"    
+  - name: distFolderName        
+    value: 'Z2DataDMWebClient' 
+  - name: Configuration        
+    value: '' 
+
+
+resources:
+  repositories:
+    - repository: Test_github_integration
+      name: z2data-test/Test_github_integration
+      type: git
+      ref: main
+      trigger:
+        branches:
+          include:
+          - refs/heads/main
+    #     paths:
+    #      include:   # which folders will trigger this pipeline
+    #      - AMAT.UI
+
+stages:
+- template: ../../Stages/Dev/Dev_Build_UI_React.yml
+  parameters:
+    RepositoryName: ${{ parameters.RepositoryName }}
+    Shared_Folder: $(Dev_Shared_Folder)     # from SharedVars
+    Artifact_Output: $(Artifact_Output)
+    ParentFolder: $(ParentFolder)
+    AppType: $(AppType)
+    ProjectPath: $(ProjectPath)
+    # UI_Environment: $(UI_Environment)
+    Configuration: $(Configuration)
+    distFolderName: $(distFolderName)    
+
+# - template: ../../Stages/Dev/Dev_Deploy_IIS.yml
+#   parameters:
+#     Shared_Folder: $(Dev_Shared_Folder)     # from SharedVars
+#     Artifact_Output: $(Artifact_Output)
+#     ParentFolder: $(ParentFolder)
+#     WebsiteName: $(WebsiteName)
+#     WebsitePhysicalPath: $(WebsitePhysicalPath)
+#     VirtualApplication: $(VirtualApplication)    
+#     IIS_Pool: $(IIS_Pool)  
+#     AppType: $(AppType)  
+#     Environment_Name: 'Dev'
+#     Environment_Tags: 'All' 
