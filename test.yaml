@@ -4,7 +4,7 @@ parameters:
 - name: RepositoryName     # Repo name which contain project
   default: 'Test_github_integration'
 
-# change the below variables based on each pipeline
+# achange the below variables based on each pipeline
 variables:
   - template: ../../Variables/SharedVars_BE.yml
   - name: Artifact_Output
