@@ -9,7 +9,8 @@ on:
 
 jobs:
   hello:
-    runs-on: self-hosted
+    runs-on: [self-hosted, server_33]
+    
 
     steps:
       - name: Print Hello World
