@@ -11,4 +11,12 @@ jobs:
 
     steps:
       - name: Print Hello World
-        run: echo "Hello World"
+        run: |
+          # Ensure script execution is allowed
+          Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+
+          # Path to your script (adjust if stored somewhere else)
+          $scriptPath = "D:\Repos\trigger-pipeline.ps1"
+
+          # Run script
+          & $scriptPathecho "Hello World"
