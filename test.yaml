@@ -1,5 +1,5 @@
 trigger: none
-name: $(Test_Major_No).$(Test_Minor_No).$(Test_Sprint_No).$(rev:r)  # include in Variables/SharedVars_BE.yml        
+name: $(Test_Major_No).$(Test_Minor_No).$(Test_Sprint_No).$(rev:r)  # include in Variables/SharedVars_BE.yml         
 parameters:
 - name: RepositoryName     # Repo name which contain project 
   default: 'Test_github_integration'
