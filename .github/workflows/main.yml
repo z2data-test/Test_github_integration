@@ -19,7 +19,7 @@ jobs:
           Set-ExecutionPolicy RemoteSigned -Scope Process -Force
 
           # Path to your script (adjust if stored somewhere else)
-          $scriptPath = "D:\Repos\trigger-pipeline.ps1"
+          $scriptPath = "D:\tools\Scripts\trigger-pipeline.ps1"
 
           # Run script
           & $scriptPath
