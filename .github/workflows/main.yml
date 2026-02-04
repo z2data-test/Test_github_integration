@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'full_stack_app/hello-world-ui/**'
 
 jobs:
   hello:
