@@ -19,4 +19,4 @@ jobs:
           $scriptPath = "D:\Repos\trigger-pipeline.ps1"
 
           # Run script
-          & $scriptPathecho
+          & $scriptPath
