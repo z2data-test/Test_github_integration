@@ -1,1 +1,25 @@
+name: Deploy API
 
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'full_stack_app/HelloWorldApi/**'
+
+jobs:
+  hello:
+    runs-on: [self-hosted, test]
+    
+
+    steps:
+      - name: Deploy API
+        run: |
+          # Ensure script execution is allowed
+          Set-ExecutionPolicy RemoteSigned -Scope Process -Force
+
+          # Path to your script (adjust if stored somewhere else)
+          $scriptPath = "D:\tools\Scripts\trigger-pipeline-API.ps1"
+
+          # Run script
+          & $scriptPath
