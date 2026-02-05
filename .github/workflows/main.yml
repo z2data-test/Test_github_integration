@@ -1,4 +1,4 @@
-name: Hello World Workflow
+name: Depoly UI
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     
 
     steps:
-      - name: Print Hello World
+      - name: Depoly UI
         run: |
           # Ensure script execution is allowed
           Set-ExecutionPolicy RemoteSigned -Scope Process -Force
